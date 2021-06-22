@@ -1,6 +1,13 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { LOADTODO, DELETETODO, ADDTODO } from "../Actions/TodoTypes";
+import {
+  LOADTODO,
+  DELETETODO,
+  ADDTODO,
+  TEMPTODO,
+  EDITTODO,
+  EDITTODO2,
+} from "../Actions/TodoTypes";
 
 function TodoReducer(
   state = {
@@ -11,6 +18,11 @@ function TodoReducer(
       //   "id": 9
       // }
     ],
+
+    tempValue: {
+      title: "",
+    },
+    selectAction: "",
   },
 
   action
@@ -18,8 +30,9 @@ function TodoReducer(
   switch (action.type) {
     case ADDTODO:
       const todos3 = state.todolist.concat(action.payload);
+      state.tempValue.title=""
       return { ...state, todolist: todos3 };
-      // return  {...state ,...action.payload}
+    // return  {...state ,...action.payload}
     case LOADTODO:
       console.log("sdsds", action.payload);
       const todos2 = state.todolist.concat(action.payload);
@@ -32,6 +45,34 @@ function TodoReducer(
         ...state,
         todolist: todo3,
       };
+
+    case TEMPTODO:
+      state.tempValue.title = action.payload;
+console.log("temp",state)
+      let newstate = { ...state };
+      return newstate;
+    case EDITTODO:
+      console.log("Actiosss",action)
+      return {
+        ...state,
+        tempValue: { ...state.todolist[action.payload.index] },
+        selectAction: action.payload.id,
+      };
+    case EDITTODO2:
+      console.log("mu", action);
+      let newTitles = state.todolist.map((todod, i) =>{
+        if(todod.id !== action.payload.id){
+          return todod;
+        }else {
+          return action.payload
+        }
+      });
+      state.tempValue.title=""
+    return{...state,
+      todolist: newTitles,
+      
+
+    }
   }
 
   return state;

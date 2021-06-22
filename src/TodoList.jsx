@@ -1,22 +1,34 @@
 
 import { connect } from 'react-redux';
+import React, { useState } from 'react'
 import {HttpsReq} from './HttpsReq/HttpsRequest'
-import { deleteTodofromactions } from './Actions/TodoActions';
+import { asyncAction, deleteTodofromactions, loadTodofromactions ,regularAction ,editTodofromactions} from './Actions/TodoActions';
 
  function TodoList(props) {
 
-
-    function deleteMe(id) {
-        HttpsReq.delete("todos/" + id).then((res)=>{
-            props.deletetodo(id)
+    React.useEffect( ()=> {
+        props.loadAction()
         
-        }) 
+    
+      }, [])
+    function deleteMe(id) {
+       
+            props.deleteAction(id)
+        
+        
 
     }
+    function editMe(id,i) {
+        console.log("helloji" ,i,id)
+       
+               props.edit(id,i)
     
+    
+
+}
     console.log("props",props)
-    let todolist = props.list.map((values) => {
-        return <li>{values.title} <button onClick={() => { deleteMe(values.id) }}>  Delete</button></li> 
+    let todolist = props.list.map((values,i) => {
+        return <li key={values.id}>{values.title} <button onClick={() => { deleteMe(values.id) }}>  Delete</button>  <button onClick={()=>{editMe(values.id,i)}} >Edit</button> </li> 
     })
     return <div>
         <ul>{todolist}</ul>
@@ -31,14 +43,20 @@ function myStateToProps(state) {
 
     
 }
-function mapDispatchToProps(dispatch) {
-    return {
-        "deletetodo": deleteTodofromactions(dispatch),
-        
 
+// function mapDispatchToProps(dispatch) {
+//     return {
+//         "asyncAction": asyncAction(dispatch),
+//         "regularAction": regularAction(dispatch)
+//     }
 
-    }
+// }
 
-}
+export default  connect(myStateToProps, {
+    // "asyncAction": asyncAction,
+    "loadAction" : loadTodofromactions,
+    "deleteAction":deleteTodofromactions,
+   "regularAction": regularAction,
 
-export default  connect(myStateToProps,mapDispatchToProps)(TodoList)
+   "edit":editTodofromactions
+})(TodoList)

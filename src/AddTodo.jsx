@@ -1,7 +1,7 @@
 import { HttpsReq } from './HttpsReq/HttpsRequest'
 import {connect} from 'react-redux';
 import axios from 'axios'
-import {loadTodofromactions ,addTodofromactions} from './Actions/TodoActions'
+import {loadTodofromactions ,addTodofromactions ,tempTodofromactions, editTodofromactions2} from './Actions/TodoActions'
 import React, { useState } from 'react'
 
 import { ADDTODO } from './Actions/TodoTypes';
@@ -9,7 +9,7 @@ import { ADDTODO } from './Actions/TodoTypes';
 
  function Addtodo(props){
 
-    console.log("data",props)
+    console.log("data",props.tempValue)
     // whyconst[todo,setTodo]=React.useState({
 //     title:""
 // })
@@ -18,71 +18,100 @@ import { ADDTODO } from './Actions/TodoTypes';
 //     complete:false,
 //     id:""
 // }])
-const[todo,setTodo]=React.useState()
-const[todoList,setTodoList]=React.useState([])
+// const[todo,setTodo]=React.useState()
+
+
+
+// const[todoList,setTodoList]=React.useState([])
 
    
 
     
     // let  onChangetodo=()=>{
-        React.useEffect(function () {
-            HttpsReq.get("todos").then((res) => {
-              props.loadTodos(res.data)
-              
-            })
         
-          }, [])
 
     //   }
     const changeMe=(event)=>{
 
-setTodo(event.target.value)
+     props.temp(event.target.value)
         // setTodo({
         //   title :  event.target.value
         // })
 
 
     }
-    let singleTodo = {
-        title: todo,
-        complete: false
-      }
+    
 
-    const clickMe=()=>{
-        HttpsReq.post("todos" ,singleTodo).then((res)=>{
+    const addMe=()=>{
+        // HttpsReq.post("todos" ,singleTodo).then((res)=>{
     //         todoList.push(res.data)
 
     //  //       why push not working dd
     //         setTodoList([todoList])
-            props.addTodos(res.data)
+            
         
              
            
-        })
+        // })
+        let singleTodo = {
+            title: props.tempValue,
+            complete: false,
+            
+          }
+     props.add(singleTodo)
 
-        setTodo("")
-        
+    
 
         
     }
+    const update=()=>{
+
+       
+        let singleTodo = {
+            title: props.tempValue,
+            complete: false,
+           
+        }
+        console.log("my id",props.selected)
+     props.edit2(
+        singleTodo
+         ,
+         props.selected)
+
+    
+
+        
+    }
+
+
 
     return <div>
         <h3>Add new Todo </h3>
-        <input type="text" value={todo} onChange={changeMe} />
-        <button  onClick={clickMe} >ADD</button>
+        <input type="text" value={props.tempValue} onChange={changeMe} />
+        <button  onClick={addMe} >ADD</button>
+        <button  onClick={update} >update</button>
     </div>
 }
 
-function mapDispatchToProps(dispatch){
-    return {
-        "loadTodos": loadTodofromactions(dispatch),
-        "addTodos":addTodofromactions(dispatch)
+// function mapDispatchToProps(dispatch){
+//     return {
+//         "loadTodos": loadTodofromactions(dispatch),
+//         "addTodos":addTodofromactions(dispatch)
         
         
-    }
+//     }
     
 
+// }
+function myStateToProps(state) {
+    console.log("mystate", state)
+    return {
+        tempValue: state.tempValue.title,
+        selected:state.selectAction
+    }
+
+    
 }
 
 
-export default connect (null,mapDispatchToProps)(Addtodo)
+export default connect (myStateToProps, {add: addTodofromactions ,temp:tempTodofromactions,edit2:editTodofromactions2})(Addtodo)
